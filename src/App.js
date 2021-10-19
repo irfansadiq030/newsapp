@@ -1,5 +1,6 @@
 import './App.css';
 import Navbar from './components/Navbar';
+import News from './components/News';
 
 import React, { Component } from 'react'
 
@@ -8,7 +9,7 @@ export default class App extends Component {
     return (
       <div>
         <Navbar/>
-        <h1>Hello React Class Component</h1>
+        <News/>
       </div>
     )
   }
