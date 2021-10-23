@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 // import PropTypes from 'prop-types'
 import NewsItem from './NewsItem'
+import { Button } from '@material-ui/core';
 
 export class News extends Component {
     // Creating Articles ARRAY
@@ -272,16 +273,41 @@ export class News extends Component {
         console.log("Constructor Called From News Component");
         this.state = {
           articles:this.article,
-          loading:false
+          loading:false,
+          page:1
         }
     }
     // Creating Component did Mount
     async componentDidMount(){
-    let url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=aa514cd6cd6c47238ea8c0b7094f283d";
-    let data = await fetch(url);
-    let parsedData = await data.json()
-    console.log(parsedData);
-    this.setState({articles: parsedData.articles})
+      let url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=aa514cd6cd6c47238ea8c0b7094f283d&page=1&pageSize=20";
+      let data = await fetch(url);
+      let parsedData = await data.json()
+      console.log(parsedData);
+      this.setState({articles: parsedData.articles,totalArticles:parsedData.totalResults})
+    }
+    handleNextClick = async()=>{
+      if (this.state.page+1 > Math.ceil(this.state.totalArticles/20)) {
+        alert("No News Found");
+      }
+      else{
+      let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=aa514cd6cd6c47238ea8c0b7094f283d&page=${this.state.page+1}&pageSize=20`;
+      let data = await fetch(url);
+      let parsedData = await data.json()
+      console.log(parsedData);
+      this.setState({
+        page:this.state.page+1,
+        articles: parsedData.articles
+      })
+      }
+    }
+    handlePrevClick = async()=>{
+      let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=aa514cd6cd6c47238ea8c0b7094f283d&page=${this.state.page-1}`;
+      let data = await fetch(url);
+      let parsedData = await data.json()
+      this.setState({
+        page:this.state.page-1,
+        articles: parsedData.articles
+      })
     }
     render() {
     return (
@@ -289,11 +315,16 @@ export class News extends Component {
         <h1 className="">Daily News - Top Headlines</h1>
         <div className="row">
           {this.state.articles.map((element)=>{
+            const total_news =this.article.length;
+
             return <div className="col-md-4">
             <NewsItem title={element.title} description={element.description} imgUrl={element.urlToImage} url={element.url}/>
-        </div> 
+                </div> 
           })}
-            
+        </div>
+        <div className="container d-flex justify-content-between mb-5">
+        <Button disabled={this.state.page<=1} color="secondary" variant="contained" onClick={this.handlePrevClick}>Prev</Button>
+        <Button color="secondary" variant="contained" onClick={this.handleNextClick}>Next</Button>
         </div>
        
       </div>
